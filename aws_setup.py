@@ -126,7 +126,7 @@ def main():
 
     # create file that will contain the keypair name and dns name of each instance
     key_pair_name = key_pair.split()[2]
-    config_file = open('config.txt', 'w')
+    config_file = open('instances.txt', 'w')
     config_file.write(f"{key_pair_name}.pem\n")
 
     # allocate ip address to the instance
