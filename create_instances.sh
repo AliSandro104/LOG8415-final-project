@@ -31,7 +31,8 @@ fi
 # Copy pem key to .ssh
 cp $KEY_NAME ~/.ssh
 
-#sed -i "s@chmod 600 /home/ubuntu/.ssh/.*@chmod 600 /home/ubuntu/.ssh/$KEY_NAME@" setup.sh
+sed -i "s@chmod 600 /home/ubuntu/.ssh/.*@chmod 600 /home/ubuntu/.ssh/$KEY_NAME@" setup_manager.sh
+sed -i "s@chmod 600 /home/ubuntu/.ssh/.*@chmod 600 /home/ubuntu/.ssh/$KEY_NAME@" setup_worker.sh
 
 sleep 1m
 
@@ -39,9 +40,9 @@ sleep 1m
 sed -i -e 's/\r$//' install_mysql.sh
 sed -i -e 's/\r$//' setup_manager.sh
 sed -i -e 's/\r$//' setup_worker.sh
-chmod 700 install_mysql.sh
-chmod 700 setup_manager.sh
-chmod 700 setup_worker.sh
+chmod 777 install_mysql.sh
+chmod 777 setup_manager.sh
+chmod 777 setup_worker.sh
 
 # copy file to the unique instance 
 scp -o StrictHostKeyChecking=no -i $KEY_NAME $KEY_NAME ubuntu@$INSTANCE1:/home/ubuntu
@@ -54,7 +55,6 @@ scp -o StrictHostKeyChecking=no -i $KEY_NAME $KEY_NAME ubuntu@$INSTANCE2:/home/u
 #scp -o StrictHostKeyChecking=no -i $KEY_NAME ~/.ssh/config ubuntu@$INSTANCE2:~/.ssh
 scp -o StrictHostKeyChecking=no -i $KEY_NAME ~/.ssh/*.pem ubuntu@$INSTANCE2:~/.ssh
 scp -o StrictHostKeyChecking=no -i $KEY_NAME setup_manager.sh ubuntu@$INSTANCE2:/home/ubuntu
-scp -o StrictHostKeyChecking=no -i $KEY_NAME instances.txt ubuntu@$INSTANCE2:/home/ubuntu
 
 # copy file to the worker1 instance
 scp -o StrictHostKeyChecking=no -i $KEY_NAME $KEY_NAME ubuntu@$INSTANCE3:/home/ubuntu

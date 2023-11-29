@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # install mysql cluster
 sudo mkdir -p /opt/mysqlcluster/home
 cd /opt/mysqlcluster/home/
@@ -12,8 +14,12 @@ export PATH=$MYSQLC_HOME/bin:$PATH
 EOF'
 
 # update the env variables
-sudo chmod 700 /etc/profile.d/mysqlc.sh
-#source /etc/profile.d/mysqlc.sh
+sudo chmod 777 /etc/profile.d/mysqlc.sh
+source /etc/profile.d/mysqlc.sh
+
+# initialize cluster with libncurses5
+sudo apt-get update
+sudo apt-get -y install libncurses5
 
 # create the nbd_data folder
 sudo mkdir -p /opt/mysqlcluster/deploy/ndb_data
