@@ -55,6 +55,7 @@ scp -o StrictHostKeyChecking=no -i $KEY_NAME $KEY_NAME ubuntu@$INSTANCE2:/home/u
 #scp -o StrictHostKeyChecking=no -i $KEY_NAME ~/.ssh/config ubuntu@$INSTANCE2:~/.ssh
 scp -o StrictHostKeyChecking=no -i $KEY_NAME ~/.ssh/*.pem ubuntu@$INSTANCE2:~/.ssh
 scp -o StrictHostKeyChecking=no -i $KEY_NAME setup_manager.sh ubuntu@$INSTANCE2:/home/ubuntu
+scp -o StrictHostKeyChecking=no -i $KEY_NAME instances_private.txt ubuntu@$INSTANCE2:/home/ubuntu
 
 # copy file to the worker1 instance
 scp -o StrictHostKeyChecking=no -i $KEY_NAME $KEY_NAME ubuntu@$INSTANCE3:/home/ubuntu

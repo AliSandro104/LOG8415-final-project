@@ -8,6 +8,7 @@ sudo tar xvf mysql-cluster-gpl-7.2.1-linux2.6-x86_64.tar.gz
 sudo ln -s mysql-cluster-gpl-7.2.1-linux2.6-x86_64 mysqlc
 
 # add env variables to the mysqlc.sh file
+MYSQLC_HOME=/opt/mysqlcluster/home/mysqlc
 sudo bash -c 'cat >> /etc/profile.d/mysqlc.sh << EOF
 export MYSQLC_HOME=/opt/mysqlcluster/home/mysqlc
 export PATH=$MYSQLC_HOME/bin:$PATH
@@ -15,7 +16,7 @@ EOF'
 
 # update the env variables
 sudo chmod 777 /etc/profile.d/mysqlc.sh
-source /etc/profile.d/mysqlc.sh
+#source /etc/profile.d/mysqlc.sh
 
 # initialize cluster with libncurses5
 sudo apt-get update
@@ -40,10 +41,34 @@ basedir=/opt/mysqlcluster/home/mysqlc
 port=3306
 EOF'
 
+# get private dns of instances
+# open config file
+sed -i -e 's/\r$//' instances_private.txt
+filename="instances_private.txt"
+
+# Check if the file exists and read it line by line
+if [ -e "$filename" ]; then
+    line_counter=0
+    while read -r line; do
+        ((line_counter++))
+        if [ "$line_counter" -eq 1 ]; then
+            INSTANCE1="$line"
+        elif [ "$line_counter" -eq 2 ]; then
+            INSTANCE2="$line"
+        elif [ "$line_counter" -eq 3 ]; then
+            INSTANCE3="$line"
+        elif [ "$line_counter" -eq 4 ]; then
+            INSTANCE4="$line"
+        elif [ "$line_counter" -eq 5 ]; then
+            INSTANCE5="$line"
+        fi
+    done < "$filename"
+fi
+
 # create config.ini file
 sudo bash -c 'cat >> config.ini << EOF
 [ndb_mgmd]
-hostname=
+hostname=$INSTANCE2
 datadir=/opt/mysqlcluster/deploy/ndb_data
 nodeid=1
 
@@ -52,22 +77,20 @@ noofreplicas=3
 datadir=/opt/mysqlcluster/deploy/ndb_data
 
 [ndbd]
-hostname=
+hostname=$INSTANCE3
 nodeid=3
-serverport=50501
 
 [ndbd]
-hostname=
+hostname=$INSTANCE4
 nodeid=4
-serverport=50502
 
 [ndbd]
-hostname=
+hostname=$INSTANCE5
 nodeid=5
-serverport=50503
 
 [mysqld]
 nodeid=50
 EOF'
 
+cd /opt/mysqlcluster/home/mysqlc
 sudo scripts/mysql_install_db --datadir=/opt/mysqlcluster/deploy/mysqld_data

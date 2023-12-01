@@ -56,6 +56,12 @@ def create_security_group(name, desc, vpc_id):
                 'ToPort': 443,
                 'IpRanges': [{'CidrIp': '0.0.0.0/0'}]
             },
+            {
+                'IpProtocol': 'tcp',
+                'FromPort': 1186,
+                'ToPort': 1186,
+                'IpRanges': [{'CidrIp': '0.0.0.0/0'}]
+            }
             ]) 
     return sg
     
@@ -76,7 +82,7 @@ def create_cluster(count, instance_type, key_name, zone, subnet, security_group)
         
     return cluster
 
-def allocate_elastic_ip_to_instances(cluster, config_file):
+def allocate_elastic_ip_to_instances(cluster, config_file1, config_file2):
     # put the instances id in a list
     instances =  [instance.id for instance in cluster]
 
@@ -96,7 +102,8 @@ def allocate_elastic_ip_to_instances(cluster, config_file):
         cluster[index].reload()
 
         # write DNS name of the instance to a file
-        config_file.write(f"{cluster[index].public_dns_name}\n")
+        config_file1.write(f"{cluster[index].public_dns_name}\n")
+        config_file2.write(f"{cluster[index].private_dns_name}\n")
 
 
 def main():
@@ -126,11 +133,12 @@ def main():
 
     # create file that will contain the keypair name and dns name of each instance
     key_pair_name = key_pair.split()[2]
-    config_file = open('instances.txt', 'w')
-    config_file.write(f"{key_pair_name}.pem\n")
+    config_file1 = open('instances.txt', 'w')
+    config_file2 = open('instances_private.txt', 'w')
+    config_file1.write(f"{key_pair_name}.pem\n")
 
     # allocate ip address to the instance
-    allocate_elastic_ip_to_instances(cluster1, config_file)
+    allocate_elastic_ip_to_instances(cluster1, config_file1, config_file2)
 
     # create the cluster of instances and start them
     cluster2 = create_cluster(4, 't2.micro', KEY_NAME, ZONE_NAME, zone_subnet_id, security_group)
@@ -142,10 +150,11 @@ def main():
     waiter.wait(InstanceIds = instances2)
     
     # allocate ip address to the instance
-    allocate_elastic_ip_to_instances(cluster2, config_file)
+    allocate_elastic_ip_to_instances(cluster2, config_file1, config_file2)
 
     # close config file
-    config_file.close()
+    config_file1.close()
+    config_file2.close()
 
 
 if __name__ == "__main__":
