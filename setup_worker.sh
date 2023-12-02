@@ -11,7 +11,7 @@ sudo ln -s mysql-cluster-gpl-7.2.1-linux2.6-x86_64 mysqlc
 MYSQLC_HOME=/opt/mysqlcluster/home/mysqlc
 sudo bash -c 'cat >> /etc/profile.d/mysqlc.sh << EOF
 export MYSQLC_HOME=/opt/mysqlcluster/home/mysqlc
-export PATH=$MYSQLC_HOME/bin:$PATH
+export PATH=/opt/mysqlcluster/home/mysqlc/bin:$PATH
 EOF'
 
 # update the env variables
@@ -24,3 +24,4 @@ sudo apt-get -y install libncurses5
 
 # create the nbd_data folder
 sudo mkdir -p /opt/mysqlcluster/deploy/ndb_data
+sudo chmod 777 /opt/mysqlcluster/deploy/ndb_data

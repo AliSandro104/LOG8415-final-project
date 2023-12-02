@@ -1,5 +1,5 @@
-ip-172-31-34-10.ec2.internal
-ip-172-31-38-227.ec2.internal
-ip-172-31-43-40.ec2.internal
-ip-172-31-46-154.ec2.internal
-ip-172-31-47-97.ec2.internal
+ip-172-31-39-150.ec2.internal
+ip-172-31-36-61.ec2.internal
+ip-172-31-47-172.ec2.internal
+ip-172-31-43-230.ec2.internal
+ip-172-31-36-165.ec2.internal

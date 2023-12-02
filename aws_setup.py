@@ -105,16 +105,97 @@ def allocate_elastic_ip_to_instances(cluster, config_file1, config_file2):
         config_file1.write(f"{cluster[index].public_dns_name}\n")
         config_file2.write(f"{cluster[index].private_dns_name}\n")
 
+def create_gatekeeper():
+    KEY_NAME = 'ms_kp_pem'
+    SECURITY_GROUP_NAME = 'gatekeeper'
+    ZONE_NAME = 'us-east-1a'
+
+    vpc_id = ec2_client.describe_vpcs()['Vpcs'][0]['VpcId']
+
+    # create security group
+    security_group = create_security_group(name = SECURITY_GROUP_NAME, desc = 'Cluster security group', vpc_id = vpc_id)
+    
+    # create key pair
+    key_pair = create_key_pair(KEY_NAME)
+
+    # get subnet id
+    zone_subnet_id = get_subnet_id(ZONE_NAME) 
+
+    # create security group
+    security_group = create_security_group(name = SECURITY_GROUP_NAME, desc = 'Cluster security group', vpc_id = vpc_id)
+    
+    # create key pair
+    key_pair = create_key_pair(KEY_NAME)
+
+    # get subnet id
+    zone_subnet_id = get_subnet_id(ZONE_NAME)  
+
+    return
+
+def create_proxy():
+    KEY_NAME = 'ms_kp_pem'
+    SECURITY_GROUP_NAME = 'proxy'
+    ZONE_NAME = 'us-east-1a'
+
+    vpc_id = ec2_client.describe_vpcs()['Vpcs'][0]['VpcId']
+
+    # create security group
+    security_group = create_security_group(name = SECURITY_GROUP_NAME, desc = 'Cluster security group', vpc_id = vpc_id)
+    
+    # create key pair
+    key_pair = create_key_pair(KEY_NAME)
+
+    # get subnet id
+    zone_subnet_id = get_subnet_id(ZONE_NAME) 
+
+    # create security group
+    security_group = create_security_group(name = SECURITY_GROUP_NAME, desc = 'Cluster security group', vpc_id = vpc_id)
+    
+    # create key pair
+    key_pair = create_key_pair(KEY_NAME)
+
+    # get subnet id
+    zone_subnet_id = get_subnet_id(ZONE_NAME)  
+
+    return
+
+def create_trusted_host():
+    KEY_NAME = 'ms_kp_pem'
+    SECURITY_GROUP_NAME = 'trusted host'
+    ZONE_NAME = 'us-east-1a'
+
+    vpc_id = ec2_client.describe_vpcs()['Vpcs'][0]['VpcId']
+
+    # create security group
+    security_group = create_security_group(name = SECURITY_GROUP_NAME, desc = 'Cluster security group', vpc_id = vpc_id)
+    
+    # create key pair
+    key_pair = create_key_pair(KEY_NAME)
+
+    # get subnet id
+    zone_subnet_id = get_subnet_id(ZONE_NAME) 
+
+    # create security group
+    security_group = create_security_group(name = SECURITY_GROUP_NAME, desc = 'Cluster security group', vpc_id = vpc_id)
+    
+    # create key pair
+    key_pair = create_key_pair(KEY_NAME)
+
+    # get subnet id
+    zone_subnet_id = get_subnet_id(ZONE_NAME)  
+
+    return
+
 
 def main():
     KEY_NAME = 'ms_kp_pem'
-    SECURITY_GROUP_NAME = 'securityGroup2'
+    SECURITY_GROUP_NAME = 'cluster'
     ZONE_NAME = 'us-east-1a'
 
     vpc_id = ec2_client.describe_vpcs()['Vpcs'][0]['VpcId']
     
     # create security group
-    security_group = create_security_group(name = SECURITY_GROUP_NAME, desc = 'TP2 security group', vpc_id = vpc_id)
+    security_group = create_security_group(name = SECURITY_GROUP_NAME, desc = 'Cluster security group', vpc_id = vpc_id)
     
     # create key pair
     key_pair = create_key_pair(KEY_NAME)

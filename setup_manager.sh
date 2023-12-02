@@ -11,7 +11,7 @@ sudo ln -s mysql-cluster-gpl-7.2.1-linux2.6-x86_64 mysqlc
 MYSQLC_HOME=/opt/mysqlcluster/home/mysqlc
 sudo bash -c 'cat >> /etc/profile.d/mysqlc.sh << EOF
 export MYSQLC_HOME=/opt/mysqlcluster/home/mysqlc
-export PATH=$MYSQLC_HOME/bin:$PATH
+export PATH=/opt/mysqlcluster/home/mysqlc/bin:$PATH
 EOF'
 
 # update the env variables
@@ -47,6 +47,7 @@ sed -i -e 's/\r$//' instances_private.txt
 filename="instances_private.txt"
 
 # Check if the file exists and read it line by line
+cd ~
 if [ -e "$filename" ]; then
     line_counter=0
     while read -r line; do
@@ -66,7 +67,8 @@ if [ -e "$filename" ]; then
 fi
 
 # create config.ini file
-sudo bash -c 'cat >> config.ini << EOF
+cd /opt/mysqlcluster/deploy/conf
+sudo bash -c "cat >> config.ini << EOF
 [ndb_mgmd]
 hostname=$INSTANCE2
 datadir=/opt/mysqlcluster/deploy/ndb_data
@@ -90,7 +92,9 @@ nodeid=5
 
 [mysqld]
 nodeid=50
-EOF'
+EOF"
 
+# execute mysql cluster script
 cd /opt/mysqlcluster/home/mysqlc
+sudo chmod 777 /opt/mysqlcluster/deploy/ndb_data
 sudo scripts/mysql_install_db --datadir=/opt/mysqlcluster/deploy/mysqld_data
