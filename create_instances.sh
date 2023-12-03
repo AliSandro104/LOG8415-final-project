@@ -46,32 +46,27 @@ chmod 777 setup_worker.sh
 
 # copy file to the unique instance 
 scp -o StrictHostKeyChecking=no -i $KEY_NAME $KEY_NAME ubuntu@$INSTANCE1:/home/ubuntu
-#scp -o StrictHostKeyChecking=no -i $KEY_NAME ~/.ssh/config ubuntu@$INSTANCE1:~/.ssh
 scp -o StrictHostKeyChecking=no -i $KEY_NAME ~/.ssh/*.pem ubuntu@$INSTANCE1:~/.ssh
 scp -o StrictHostKeyChecking=no -i $KEY_NAME install_mysql.sh ubuntu@$INSTANCE1:/home/ubuntu
 
 # copy file to the manager instance 
 scp -o StrictHostKeyChecking=no -i $KEY_NAME $KEY_NAME ubuntu@$INSTANCE2:/home/ubuntu
-#scp -o StrictHostKeyChecking=no -i $KEY_NAME ~/.ssh/config ubuntu@$INSTANCE2:~/.ssh
 scp -o StrictHostKeyChecking=no -i $KEY_NAME ~/.ssh/*.pem ubuntu@$INSTANCE2:~/.ssh
 scp -o StrictHostKeyChecking=no -i $KEY_NAME setup_manager.sh ubuntu@$INSTANCE2:/home/ubuntu
 scp -o StrictHostKeyChecking=no -i $KEY_NAME instances_private.txt ubuntu@$INSTANCE2:/home/ubuntu
 
 # copy file to the worker1 instance
 scp -o StrictHostKeyChecking=no -i $KEY_NAME $KEY_NAME ubuntu@$INSTANCE3:/home/ubuntu
-#scp -o StrictHostKeyChecking=no -i $KEY_NAME ~/.ssh/config ubuntu@$INSTANCE3:~/.ssh
 scp -o StrictHostKeyChecking=no -i $KEY_NAME ~/.ssh/*.pem ubuntu@$INSTANCE3:~/.ssh
 scp -o StrictHostKeyChecking=no -i $KEY_NAME setup_worker.sh ubuntu@$INSTANCE3:/home/ubuntu
 
 # copy file to the worker2 instance
 scp -o StrictHostKeyChecking=no -i $KEY_NAME $KEY_NAME ubuntu@$INSTANCE4:/home/ubuntu
-#scp -o StrictHostKeyChecking=no -i $KEY_NAME ~/.ssh/config ubuntu@$INSTANCE4:~/.ssh
 scp -o StrictHostKeyChecking=no -i $KEY_NAME ~/.ssh/*.pem ubuntu@$INSTANCE4:~/.ssh
 scp -o StrictHostKeyChecking=no -i $KEY_NAME setup_worker.sh ubuntu@$INSTANCE4:/home/ubuntu
 
 # copy file to the worker3 instance
 scp -o StrictHostKeyChecking=no -i $KEY_NAME $KEY_NAME ubuntu@$INSTANCE5:/home/ubuntu
-#scp -o StrictHostKeyChecking=no -i $KEY_NAME ~/.ssh/config ubuntu@$INSTANCE5:~/.ssh
 scp -o StrictHostKeyChecking=no -i $KEY_NAME ~/.ssh/*.pem ubuntu@$INSTANCE5:~/.ssh
 scp -o StrictHostKeyChecking=no -i $KEY_NAME setup_worker.sh ubuntu@$INSTANCE5:/home/ubuntu
 
