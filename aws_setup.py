@@ -36,60 +36,64 @@ def create_security_group(name, desc, vpc_id):
     return sg
 
 def add_inbound_ip_permissions(sg, ip_protocol, from_port, to_port, ip_ranges, other_sg):
-    # add an inbound rule to the security group sg
-    if other_sg is None:
-        ec2_client.authorize_security_group_ingress(
-            GroupId = sg['GroupId'],
-            IpPermissions = [
-                {
-                    'IpProtocol': ip_protocol,
-                    'FromPort': from_port,
-                    'ToPort': to_port,
-                    'IpRanges': ip_ranges
-                }
-            ]
-        )
-    else:
-        ec2_client.authorize_security_group_ingress(
-            GroupId = sg['GroupId'],
-            IpPermissions = [
-                {
-                    'IpProtocol': ip_protocol,
-                    'FromPort': from_port,
-                    'ToPort': to_port,
-                    'UserIdGroupPairs': [{'GroupId': other_sg['GroupId']}]
-                }
-            ]
-        )
-    return
+    # add an inbound rule to the security group sg if it doesn't already exist
+    try:
+        if other_sg is None:
+            ec2_client.authorize_security_group_ingress(
+                GroupId = sg['GroupId'],
+                IpPermissions = [
+                    {
+                        'IpProtocol': ip_protocol,
+                        'FromPort': from_port,
+                        'ToPort': to_port,
+                        'IpRanges': ip_ranges
+                    }
+                ]
+            )
+        else:
+            ec2_client.authorize_security_group_ingress(
+                GroupId = sg['GroupId'],
+                IpPermissions = [
+                    {
+                        'IpProtocol': ip_protocol,
+                        'FromPort': from_port,
+                        'ToPort': to_port,
+                        'UserIdGroupPairs': [{'GroupId': other_sg['GroupId']}]
+                    }
+                ]
+            )
+    except ClientError as e:
+        return
 
 def add_outbound_ip_permissions(sg, ip_protocol, from_port, to_port, ip_ranges, other_sg):
-    # add an inbound rule to the security group sg
-    if other_sg is None:
-        ec2_client.authorize_security_group_egress(
-            GroupId = sg['GroupId'],
-            IpPermissions = [
-                {
-                    'IpProtocol': ip_protocol,
-                    'FromPort': from_port,
-                    'ToPort': to_port,
-                    'IpRanges': ip_ranges
-                }
-            ]
-        )
-    else:
-        ec2_client.authorize_security_group_egress(
-            GroupId = sg['GroupId'],
-            IpPermissions = [
-                {
-                    'IpProtocol': ip_protocol,
-                    'FromPort': from_port,
-                    'ToPort': to_port,
-                    'UserIdGroupPairs': [{'GroupId': other_sg['GroupId']}]
-                }
-            ]
-        )
-    return
+    # add an outbound rule to the security group sg if it doesn't already exist
+    try:
+        if other_sg is None:
+            ec2_client.authorize_security_group_egress(
+                GroupId = sg['GroupId'],
+                IpPermissions = [
+                    {
+                        'IpProtocol': ip_protocol,
+                        'FromPort': from_port,
+                        'ToPort': to_port,
+                        'IpRanges': ip_ranges
+                    }
+                ]
+            )
+        else:
+            ec2_client.authorize_security_group_egress(
+                GroupId = sg['GroupId'],
+                IpPermissions = [
+                    {
+                        'IpProtocol': ip_protocol,
+                        'FromPort': from_port,
+                        'ToPort': to_port,
+                        'UserIdGroupPairs': [{'GroupId': other_sg['GroupId']}]
+                    }
+                ]
+            )
+    except ClientError as e:
+        return
     
 def create_cluster(count, instance_type, key_name, zone, subnet, security_group):        
     # create the cluster
@@ -130,6 +134,12 @@ def allocate_elastic_ip_to_instances(cluster, config_file1, config_file2):
         # write DNS name of the instance to a file
         config_file1.write(f"{cluster[index].public_dns_name}\n")
         config_file2.write(f"{cluster[index].private_dns_name}\n")
+
+        # add the sql query to the sql script to grant permission to the workers (index = 0 represents the master node)
+        if index != 0:
+            with open('initialize_db.sql', 'a') as sql_file:
+                sql_file.write(f"GRANT ALL ON *.* TO 'worker{index}'@'{cluster[index].private_dns_name}' IDENTIFIED BY 'worker{index}';\n")
+
 
 def create_gatekeeper(zone_name, key_name, subnet_id, sg):
     # create the cluster of instances and start them
@@ -193,7 +203,8 @@ def main():
 
     # add ip permissions for cluster security group
     add_inbound_ip_permissions(cluster_sg, 'tcp', 22, 22, ip_ranges, None)
-    add_inbound_ip_permissions(cluster_sg, 'tcp', 1186, 1186, ip_ranges, None)
+    add_inbound_ip_permissions(cluster_sg, 'tcp', 1186, 1186, ip_ranges, cluster_sg)
+    add_inbound_ip_permissions(cluster_sg, 'tcp', 3306, 3306, ip_ranges, cluster_sg)
     add_inbound_ip_permissions(cluster_sg, 'tcp', 8082, 8082, ip_ranges, proxy_sg)
 
     # add ip permissions for proxy security group
