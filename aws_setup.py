@@ -205,23 +205,25 @@ def main():
     add_inbound_ip_permissions(cluster_sg, 'tcp', 22, 22, ip_ranges, None)
     add_inbound_ip_permissions(cluster_sg, 'tcp', 1186, 1186, ip_ranges, cluster_sg)
     add_inbound_ip_permissions(cluster_sg, 'tcp', 3306, 3306, ip_ranges, cluster_sg)
-    add_inbound_ip_permissions(cluster_sg, 'tcp', 8082, 8082, ip_ranges, proxy_sg)
+    add_inbound_ip_permissions(cluster_sg, 'tcp', 8083, 8083, ip_ranges, proxy_sg)
+    add_inbound_ip_permissions(cluster_sg, 'icmp', -1, -1, ip_ranges, proxy_sg) # allow the cluster to be ping-ed by the proxy
 
     # add ip permissions for proxy security group
     add_inbound_ip_permissions(proxy_sg, 'tcp', 22, 22, ip_ranges, None)
-    add_inbound_ip_permissions(proxy_sg, 'tcp', 8082, 8082, ip_ranges, cluster_sg)
-    add_inbound_ip_permissions(proxy_sg, 'tcp', 8081, 8081, ip_ranges, trusted_host_sg)
+    add_inbound_ip_permissions(proxy_sg, 'tcp', 8083, 8083, ip_ranges, cluster_sg)
+    add_inbound_ip_permissions(proxy_sg, 'tcp', 8082, 8082, ip_ranges, trusted_host_sg)
 
     # add ip permissions for trusted host security group
     add_inbound_ip_permissions(trusted_host_sg, 'tcp', 22, 22, ip_ranges, None)
-    add_inbound_ip_permissions(trusted_host_sg, 'tcp', 8081, 8081, ip_ranges, proxy_sg)
-    add_inbound_ip_permissions(trusted_host_sg, 'tcp', 8080, 8080, ip_ranges, gatekeeper_sg)
+    add_inbound_ip_permissions(trusted_host_sg, 'tcp', 8082, 8082, ip_ranges, proxy_sg)
+    add_inbound_ip_permissions(trusted_host_sg, 'tcp', 8081, 8081, ip_ranges, gatekeeper_sg)
     
     # add ip permissions for gatekeeper security group
     add_inbound_ip_permissions(gatekeeper_sg, 'tcp', 22, 22, ip_ranges, None)
     add_inbound_ip_permissions(gatekeeper_sg, 'tcp', 80, 80, ip_ranges, None)
     add_inbound_ip_permissions(gatekeeper_sg, 'tcp', 443, 443, ip_ranges, None)
-    add_inbound_ip_permissions(gatekeeper_sg, 'tcp', 8080, 8080, ip_ranges, trusted_host_sg)
+    add_inbound_ip_permissions(gatekeeper_sg, 'tcp', 8081, 8081, ip_ranges, trusted_host_sg)
+    add_inbound_ip_permissions(gatekeeper_sg, 'tcp', 8080, 8080, ip_ranges, None)
     
     # create the single instance and start it
     cluster1 = create_cluster(1, 't2.micro', KEY_NAME, ZONE_NAME, zone_subnet_id, cluster_sg)
@@ -234,8 +236,8 @@ def main():
 
     # create file that will contain the keypair name and dns name of each instance
     key_pair_name = key_pair.split()[2]
-    config_file1 = open('instances.txt', 'w')
-    config_file2 = open('instances_private.txt', 'w')
+    config_file1 = open('ip_addresses/cluster_public_ip.txt', 'w')
+    config_file2 = open('ip_addresses/cluster_private_ip.txt', 'w')
     config_file1.write(f"{key_pair_name}.pem\n")
 
     # allocate ip address to the instance
@@ -259,13 +261,27 @@ def main():
 
     # create gatekeeper
     gatekeeper = create_gatekeeper(ZONE_NAME, KEY_NAME, zone_subnet_id, gatekeeper_sg)
+    gatekeeper[0].reload()
 
     # create trusted host
     trusted_host = create_trusted_host(ZONE_NAME, KEY_NAME, zone_subnet_id, trusted_host_sg)
+    trusted_host[0].reload()
 
     # create proxy
     proxy = create_proxy(ZONE_NAME, KEY_NAME, zone_subnet_id, proxy_sg)
+    proxy[0].reload()
 
+    # store public ip addresses in file 
+    with open('ip_addresses/cloud_pattern_public_ip.txt', 'w') as host_file:
+        host_file.write(f"{gatekeeper[0].public_dns_name}\n")
+        host_file.write(f"{trusted_host[0].public_dns_name}\n")
+        host_file.write(f"{proxy[0].public_dns_name}\n")
+
+    # store private ip addresses in file 
+    with open('ip_addresses/cloud_pattern_private_ip.txt', 'w') as host_file:
+        host_file.write(f"{gatekeeper[0].private_dns_name}\n")
+        host_file.write(f"{trusted_host[0].private_dns_name}\n")
+        host_file.write(f"{proxy[0].private_dns_name}\n")
     return
 
 if __name__ == "__main__":

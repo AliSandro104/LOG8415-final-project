@@ -1,7 +1,18 @@
-SOURCE /tmp/sakila-db/sakila-schema.sql;
-SOURCE /tmp/sakila-db/sakila-data.sql;
-USE sakila;
-
-GRANT ALL ON *.* TO 'worker1'@'ec2-54-84-141-25.compute-1.amazonaws.com' IDENTIFIED BY 'worker1';
-GRANT ALL ON *.* TO 'worker2'@'ec2-44-198-122-174.compute-1.amazonaws.com' IDENTIFIED BY 'worker2';
-GRANT ALL ON *.* TO 'worker3'@'ec2-54-224-84-190.compute-1.amazonaws.com' IDENTIFIED BY 'worker3';
+GRANT ALL ON *.* TO 'worker1'@'ip-172-31-41-248.ec2.internal' IDENTIFIED BY 'worker1';
+GRANT ALL ON *.* TO 'worker2'@'ip-172-31-36-224.ec2.internal' IDENTIFIED BY 'worker2';
+GRANT ALL ON *.* TO 'worker3'@'ip-172-31-47-112.ec2.internal' IDENTIFIED BY 'worker3';
+GRANT ALL ON *.* TO 'worker1'@'ip-172-31-33-157.ec2.internal' IDENTIFIED BY 'worker1';
+GRANT ALL ON *.* TO 'worker2'@'ip-172-31-38-85.ec2.internal' IDENTIFIED BY 'worker2';
+GRANT ALL ON *.* TO 'worker3'@'ip-172-31-33-20.ec2.internal' IDENTIFIED BY 'worker3';
+GRANT ALL ON *.* TO 'worker1'@'ip-172-31-42-116.ec2.internal' IDENTIFIED BY 'worker1';
+GRANT ALL ON *.* TO 'worker2'@'ip-172-31-34-52.ec2.internal' IDENTIFIED BY 'worker2';
+GRANT ALL ON *.* TO 'worker3'@'ip-172-31-43-34.ec2.internal' IDENTIFIED BY 'worker3';
+GRANT ALL ON *.* TO 'worker1'@'ip-172-31-38-120.ec2.internal' IDENTIFIED BY 'worker1';
+GRANT ALL ON *.* TO 'worker2'@'ip-172-31-38-106.ec2.internal' IDENTIFIED BY 'worker2';
+GRANT ALL ON *.* TO 'worker3'@'ip-172-31-44-217.ec2.internal' IDENTIFIED BY 'worker3';
+GRANT ALL ON *.* TO 'worker1'@'ip-172-31-35-168.ec2.internal' IDENTIFIED BY 'worker1';
+GRANT ALL ON *.* TO 'worker2'@'ip-172-31-45-195.ec2.internal' IDENTIFIED BY 'worker2';
+GRANT ALL ON *.* TO 'worker3'@'ip-172-31-39-187.ec2.internal' IDENTIFIED BY 'worker3';
+GRANT ALL ON *.* TO 'worker1'@'ip-172-31-35-145.ec2.internal' IDENTIFIED BY 'worker1';
+GRANT ALL ON *.* TO 'worker2'@'ip-172-31-44-76.ec2.internal' IDENTIFIED BY 'worker2';
+GRANT ALL ON *.* TO 'worker3'@'ip-172-31-46-107.ec2.internal' IDENTIFIED BY 'worker3';
