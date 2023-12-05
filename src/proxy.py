@@ -12,7 +12,6 @@ algorithm = worker_choice_algorithms[2] # Customized
 def measure_response_time(ip_address):
     data = ""
     output = Popen(f"ping {ip_address} -c 1", stdout=PIPE, encoding="utf-8", shell=True)
-    print(output)
 
     for line in output.stdout:
         data = data + line
@@ -29,7 +28,6 @@ def customized_algorithm(ip_addresses_workers):
     for ip_address in ip_addresses_workers:
         response_times[ip_address] = measure_response_time(ip_address) # measure the response time of each worker
 
-    print(response_times)
     return min(response_times, key=response_times.get) # get the key which is the ip address corresponding to the minimum response time
 
 def choose_node(data):
@@ -45,14 +43,14 @@ def choose_node(data):
         return ip_addresses[1] # return the master node
     
     elif algorithm == 'Random': # if the algorithm is 'Random'
-        random_list = ip_addresses[-3] # take the last three elements of the list (representing the ip addresses of the worker nodes)
+        random_list = ip_addresses[-3:] # take the last three elements of the list (representing the ip addresses of the worker nodes)
         return random.choice(random_list) # return the ip address of a random worker
     
     elif algorithm == 'Customized': # if the algorithm is 'Customized'
-        return customized_algorithm(ip_addresses[-3]) # call method that will compute the response time of each worker and choose the smallest one
+        return customized_algorithm(ip_addresses[-3:]) # call method that will compute the response time of each worker and choose the smallest one
 
 def main():
-    # Open the config file to get the public ip of the trusted host
+    # Open the config file to get the private ip of the trusted host
     filename = 'cloud_pattern_private_ip.txt'
     with open(filename, 'r') as file:
         ip_addresses = file.readlines()
@@ -66,6 +64,7 @@ def main():
     proxy_socket.listen(1)
     print(f"Proxy listening on {proxy_host}:{proxy_port}")
 
+    # listen on port 8082 for requests
     while True:
         conn, addr = proxy_socket.accept()
         print(f"Connection from {addr}")
@@ -76,8 +75,7 @@ def main():
         node_ip_address = choose_node(data)
         node_port = 8083
 
-        print(node_ip_address)
-
+        # send the request to the chosen node
         node_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         node_socket.connect((node_ip_address, node_port))
         node_socket.sendall(data.encode('utf-8'))

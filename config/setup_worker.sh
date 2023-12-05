@@ -25,3 +25,7 @@ sudo apt-get -y install libncurses5
 # create the nbd_data folder
 sudo mkdir -p /opt/mysqlcluster/deploy/ndb_data
 sudo chmod 777 /opt/mysqlcluster/deploy/ndb_data
+
+# install required python module
+sudo apt install python3-pip
+pip3 install mysql-connector-python

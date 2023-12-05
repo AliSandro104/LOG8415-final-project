@@ -8,7 +8,6 @@ def main():
         ip_addresses = file.readlines()
     
     gatekeeper_host = ip_addresses[0].strip()
-    print(gatekeeper_host)
     gatekeeper_port = 8080
 
     gatekeeper_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -16,6 +15,7 @@ def main():
     gatekeeper_socket.listen(1)
     print(f"Gatekeeper listening on {gatekeeper_host}:{gatekeeper_port}")
 
+    # listen on port 8080 for requests
     while True:
         conn, addr = gatekeeper_socket.accept()
         print(f"Connection from {addr}")

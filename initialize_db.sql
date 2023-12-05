@@ -16,3 +16,9 @@ GRANT ALL ON *.* TO 'worker3'@'ip-172-31-39-187.ec2.internal' IDENTIFIED BY 'wor
 GRANT ALL ON *.* TO 'worker1'@'ip-172-31-35-145.ec2.internal' IDENTIFIED BY 'worker1';
 GRANT ALL ON *.* TO 'worker2'@'ip-172-31-44-76.ec2.internal' IDENTIFIED BY 'worker2';
 GRANT ALL ON *.* TO 'worker3'@'ip-172-31-46-107.ec2.internal' IDENTIFIED BY 'worker3';
+GRANT ALL ON *.* TO 'worker1'@'ip-172-31-44-249.ec2.internal' IDENTIFIED BY 'worker1';
+GRANT ALL ON *.* TO 'worker2'@'ip-172-31-40-153.ec2.internal' IDENTIFIED BY 'worker2';
+GRANT ALL ON *.* TO 'worker3'@'ip-172-31-43-102.ec2.internal' IDENTIFIED BY 'worker3';
+GRANT ALL ON *.* TO 'worker1'@'ip-172-31-34-35.ec2.internal' IDENTIFIED BY 'worker1';
+GRANT ALL ON *.* TO 'worker2'@'ip-172-31-35-211.ec2.internal' IDENTIFIED BY 'worker2';
+GRANT ALL ON *.* TO 'worker3'@'ip-172-31-39-197.ec2.internal' IDENTIFIED BY 'worker3';

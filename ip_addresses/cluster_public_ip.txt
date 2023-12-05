@@ -1,6 +1,6 @@
 ms_kp_pem.pem
-ec2-54-164-90-23.compute-1.amazonaws.com
-ec2-54-173-170-57.compute-1.amazonaws.com
-ec2-3-210-195-74.compute-1.amazonaws.com
-ec2-44-219-137-179.compute-1.amazonaws.com
-ec2-52-70-91-222.compute-1.amazonaws.com
+ec2-3-83-37-18.compute-1.amazonaws.com
+ec2-35-169-189-57.compute-1.amazonaws.com
+ec2-35-153-42-51.compute-1.amazonaws.com
+ec2-18-213-54-10.compute-1.amazonaws.com
+ec2-54-164-43-78.compute-1.amazonaws.com

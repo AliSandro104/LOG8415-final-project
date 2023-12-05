@@ -105,3 +105,7 @@ sudo tar xvf sakila-db.tar.gz -C /tmp/
 
 # install sysbench
 sudo apt-get install sysbench
+
+# install required python module
+sudo apt install python3-pip
+pip3 install mysql-connector-python

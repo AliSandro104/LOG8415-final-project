@@ -1,12 +1,33 @@
 import socket
 import mysql.connector
 
-def process_sql_query(sql_query):
+def get_worker_info():
+    filename = 'cluster_private_ip.txt'
+    with open(filename, 'r') as file:
+        ip_addresses = file.readlines()
+    
+    ip_addresses = [ip.strip() for ip in ip_addresses]
+
+    # identify worker number
+    hostname = socket.getfqdn()
+    worker_num = ip_addresses.index(hostname) - 1
+    
+    # return the worker number and its private ip address
+    return worker_num, ip_addresses[worker_num + 1]
+
+def process_sql_query(sql_query, worker_num):
+    # Open the config file to get the private ip of the master node
+    filename = 'cluster_private_ip.txt'
+    with open(filename, 'r') as file:
+        ip_addresses = file.readlines()
+
+    ip_addresses = [ip.strip() for ip in ip_addresses]
+    
     # sql config 
     db_config = {
-        'host': '127.0.0.1',
-        'user': 'root',
-        'password': '',
+        'host': ip_addresses[1],
+        'user': 'worker{}'.format(worker_num),
+        'password': 'worker'.format(worker_num),
         'database': 'sakila',
     }
 
@@ -17,10 +38,6 @@ def process_sql_query(sql_query):
 
         # Execute the SQL query
         cursor.execute(sql_query)
-
-        # If the query modifies the database, commit the changes
-        if sql_query.strip().lower().startswith(('insert', 'update', 'delete')):
-            connection.commit()
 
         # Fetch the result
         result = cursor.fetchall() 
@@ -41,14 +58,16 @@ def main():
         ip_addresses = file.readlines()
 
     ip_addresses = [ip.strip() for ip in ip_addresses]
+    
+    # identify worker number and worker hostname
+    worker_num, worker_host = get_worker_info()
 
-    master_host = ip_addresses[1]  # Update with the actual IP address or hostname
-    master_port = 8083
+    worker_port = 8083
 
     master_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    master_socket.bind((master_host, master_port))
+    master_socket.bind((worker_host, worker_port))
     master_socket.listen(1)
-    print(f"Master listening on {master_host}:{master_port}")
+    print(f"Worker {worker_num} listening on {worker_host}:{worker_port}")
 
     while True:
         conn, addr = master_socket.accept()
@@ -58,7 +77,7 @@ def main():
         print(f"Received data: {data}")
 
         # Process the SQL query
-        result = process_sql_query(data)
+        result = process_sql_query(data, worker_num)
 
         # Send the result back to the proxy
         conn.sendall(str(result).encode('utf-8'))

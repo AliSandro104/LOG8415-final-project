@@ -116,6 +116,12 @@ def allocate_elastic_ip_to_instances(cluster, config_file1, config_file2):
     # put the instances id in a list
     instances =  [instance.id for instance in cluster]
 
+    # add sql queries to be executed in a sql file
+    with open('config/initialize_db.sql', 'w') as sql_file:
+        sql_file.write("SOURCE /tmp/sakila-db/sakila-schema.sql;")
+        sql_file.write("SOURCE /tmp/sakila-db/sakila-data.sql;")
+        sql_file.write("USE sakila;")
+
     for index, instance_id in enumerate(instances):
         # allocate Elastic IP
         allocation_response = ec2_client.allocate_address(
@@ -137,8 +143,8 @@ def allocate_elastic_ip_to_instances(cluster, config_file1, config_file2):
 
         # add the sql query to the sql script to grant permission to the workers (index = 0 represents the master node)
         if index != 0:
-            with open('initialize_db.sql', 'a') as sql_file:
-                sql_file.write(f"GRANT ALL ON *.* TO 'worker{index}'@'{cluster[index].private_dns_name}' IDENTIFIED BY 'worker{index}';\n")
+            with open('config/initialize_db.sql', 'a') as sql_file:
+                sql_file.write(f"GRANT ALL ON *.* TO 'worker{index}'@'{cluster[0].private_dns_name}' IDENTIFIED BY 'worker{index}';\n")
 
 
 def create_gatekeeper(zone_name, key_name, subnet_id, sg):
@@ -212,6 +218,7 @@ def main():
     add_inbound_ip_permissions(proxy_sg, 'tcp', 22, 22, ip_ranges, None)
     add_inbound_ip_permissions(proxy_sg, 'tcp', 8083, 8083, ip_ranges, cluster_sg)
     add_inbound_ip_permissions(proxy_sg, 'tcp', 8082, 8082, ip_ranges, trusted_host_sg)
+    add_inbound_ip_permissions(proxy_sg, 'icmp', -1, -1, ip_ranges, cluster_sg) # allow the cluster to be ping-ed by the proxy
 
     # add ip permissions for trusted host security group
     add_inbound_ip_permissions(trusted_host_sg, 'tcp', 22, 22, ip_ranges, None)

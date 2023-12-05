@@ -22,7 +22,8 @@ def main():
     trusted_host_socket.bind((trusted_host_address, trusted_host_port))
     trusted_host_socket.listen(1)
     print(f"Trusted Host listening on {trusted_host_address}:{trusted_host_port}")
-
+    
+    # listen on port 8081 for requests
     while True:
         conn, addr = trusted_host_socket.accept()
         print(f"Connection from {addr}")

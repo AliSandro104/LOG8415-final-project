@@ -50,9 +50,6 @@ fi
 # Copy pem key to .ssh
 cp $KEY_NAME ~/.ssh
 
-#sed -i "s@chmod 600 /home/ubuntu/.ssh/.*@chmod 600 /home/ubuntu/.ssh/$KEY_NAME@" setup_manager.sh
-#sed -i "s@chmod 600 /home/ubuntu/.ssh/.*@chmod 600 /home/ubuntu/.ssh/$KEY_NAME@" setup_worker.sh
-
 sleep 1m
 
 # adjust the script files to be able to run them
@@ -75,6 +72,7 @@ scp -o StrictHostKeyChecking=no -i $KEY_NAME config/install_mysql.sh ubuntu@$INS
 scp -o StrictHostKeyChecking=no -i $KEY_NAME $KEY_NAME ubuntu@$INSTANCE2:/home/ubuntu
 scp -o StrictHostKeyChecking=no -i $KEY_NAME ~/.ssh/*.pem ubuntu@$INSTANCE2:~/.ssh
 scp -o StrictHostKeyChecking=no -i $KEY_NAME config/setup_manager.sh ubuntu@$INSTANCE2:/home/ubuntu
+scp -o StrictHostKeyChecking=no -i $KEY_NAME src/master.py ubuntu@$INSTANCE2:/home/ubuntu
 scp -o StrictHostKeyChecking=no -i $KEY_NAME config/initialize_db.sql ubuntu@$INSTANCE2:/home/ubuntu
 scp -o StrictHostKeyChecking=no -i $KEY_NAME ip_addresses/cluster_private_ip.txt ubuntu@$INSTANCE2:/home/ubuntu
 scp -o StrictHostKeyChecking=no -i $KEY_NAME ip_addresses/cloud_pattern_private_ip.txt ubuntu@$INSTANCE2:/home/ubuntu
@@ -83,18 +81,24 @@ scp -o StrictHostKeyChecking=no -i $KEY_NAME ip_addresses/cloud_pattern_private_
 scp -o StrictHostKeyChecking=no -i $KEY_NAME $KEY_NAME ubuntu@$INSTANCE3:/home/ubuntu
 scp -o StrictHostKeyChecking=no -i $KEY_NAME ~/.ssh/*.pem ubuntu@$INSTANCE3:~/.ssh
 scp -o StrictHostKeyChecking=no -i $KEY_NAME config/setup_worker.sh ubuntu@$INSTANCE3:/home/ubuntu
+scp -o StrictHostKeyChecking=no -i $KEY_NAME src/worker.py ubuntu@$INSTANCE3:/home/ubuntu
+scp -o StrictHostKeyChecking=no -i $KEY_NAME ip_addresses/cluster_private_ip.txt ubuntu@$INSTANCE3:/home/ubuntu
 scp -o StrictHostKeyChecking=no -i $KEY_NAME ip_addresses/cloud_pattern_private_ip.txt ubuntu@$INSTANCE3:/home/ubuntu
 
 # copy file to the worker2 instance
 scp -o StrictHostKeyChecking=no -i $KEY_NAME $KEY_NAME ubuntu@$INSTANCE4:/home/ubuntu
 scp -o StrictHostKeyChecking=no -i $KEY_NAME ~/.ssh/*.pem ubuntu@$INSTANCE4:~/.ssh
 scp -o StrictHostKeyChecking=no -i $KEY_NAME config/setup_worker.sh ubuntu@$INSTANCE4:/home/ubuntu
+scp -o StrictHostKeyChecking=no -i $KEY_NAME src/worker.py ubuntu@$INSTANCE4:/home/ubuntu
+scp -o StrictHostKeyChecking=no -i $KEY_NAME ip_addresses/cluster_private_ip.txt ubuntu@$INSTANCE4:/home/ubuntu
 scp -o StrictHostKeyChecking=no -i $KEY_NAME ip_addresses/cloud_pattern_private_ip.txt ubuntu@$INSTANCE4:/home/ubuntu
 
 # copy file to the worker3 instance
 scp -o StrictHostKeyChecking=no -i $KEY_NAME $KEY_NAME ubuntu@$INSTANCE5:/home/ubuntu
 scp -o StrictHostKeyChecking=no -i $KEY_NAME ~/.ssh/*.pem ubuntu@$INSTANCE5:~/.ssh
 scp -o StrictHostKeyChecking=no -i $KEY_NAME config/setup_worker.sh ubuntu@$INSTANCE5:/home/ubuntu
+scp -o StrictHostKeyChecking=no -i $KEY_NAME src/worker.py ubuntu@$INSTANCE5:/home/ubuntu
+scp -o StrictHostKeyChecking=no -i $KEY_NAME ip_addresses/cluster_private_ip.txt ubuntu@$INSTANCE5:/home/ubuntu
 scp -o StrictHostKeyChecking=no -i $KEY_NAME ip_addresses/cloud_pattern_private_ip.txt ubuntu@$INSTANCE5:/home/ubuntu
 
 # copy file to the gatekeeper instance
