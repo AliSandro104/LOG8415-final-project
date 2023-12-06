@@ -27,7 +27,7 @@ def process_sql_query(sql_query, worker_num):
     db_config = {
         'host': ip_addresses[1],
         'user': 'worker{}'.format(worker_num),
-        'password': 'worker'.format(worker_num),
+        'password': 'worker{}'.format(worker_num),
         'database': 'sakila',
     }
 

@@ -118,9 +118,9 @@ def allocate_elastic_ip_to_instances(cluster, config_file1, config_file2):
 
     # add sql queries to be executed in a sql file
     with open('config/initialize_db.sql', 'w') as sql_file:
-        sql_file.write("SOURCE /tmp/sakila-db/sakila-schema.sql;")
-        sql_file.write("SOURCE /tmp/sakila-db/sakila-data.sql;")
-        sql_file.write("USE sakila;")
+        sql_file.write("SOURCE /tmp/sakila-db/sakila-schema.sql;\n")
+        sql_file.write("SOURCE /tmp/sakila-db/sakila-data.sql;\n")
+        sql_file.write("USE sakila;\n")
 
     for index, instance_id in enumerate(instances):
         # allocate Elastic IP
@@ -144,7 +144,7 @@ def allocate_elastic_ip_to_instances(cluster, config_file1, config_file2):
         # add the sql query to the sql script to grant permission to the workers (index = 0 represents the master node)
         if index != 0:
             with open('config/initialize_db.sql', 'a') as sql_file:
-                sql_file.write(f"GRANT ALL ON *.* TO 'worker{index}'@'{cluster[0].private_dns_name}' IDENTIFIED BY 'worker{index}';\n")
+                sql_file.write(f"GRANT ALL ON *.* TO 'worker{index}'@'{cluster[index].private_dns_name}' IDENTIFIED BY 'worker{index}';\n")
 
 
 def create_gatekeeper(zone_name, key_name, subnet_id, sg):
