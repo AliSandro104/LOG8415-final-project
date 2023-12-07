@@ -42,7 +42,7 @@ def main():
 
     ip_addresses = [ip.strip() for ip in ip_addresses]
 
-    master_host = ip_addresses[1]  # Update with the actual IP address or hostname
+    master_host = ip_addresses[1]
     master_port = 8083
 
     master_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

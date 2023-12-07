@@ -1,10 +1,21 @@
-# trusted_host.py
 import socket
+import re
 
 def validate_request(query):
-    # Implement your validation logic here
-    # For simplicity, let's assume all requests are valid
-    return True
+    # extract the user inputs from the query
+    match_first_name = re.search(r"first_name\s*=\s*'([^']+)'", query)
+    match_last_name = re.search(r"last_name\s*=\s*'([^']+)'", query)
+
+    # Check if matches are found
+    if match_first_name and match_last_name:
+        user_first_name = match_first_name.group(1)
+        user_last_name = match_last_name.group(1)
+
+        if user_first_name.isalpha() and user_last_name.isalpha(): 
+            # return true if first name and last name are valid characters
+            return True
+
+    return False
 
 def main():
     # Open the config file to get the private ip of the trusted host

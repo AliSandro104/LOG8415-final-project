@@ -1,4 +1,3 @@
-# gatekeeper.py
 import socket
 
 def main():
