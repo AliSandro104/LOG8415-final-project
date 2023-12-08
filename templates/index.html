@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gatekeeper Application</title>
+</head>
+<body>
+    <h1>Choose an operation:</h1>
+    <form action="/submit_query" method="post">
+        <label for="operation">Operation:</label>
+        <select name="operation" id="operation">
+            <option value="1">Read actor data</option>
+            <option value="2">Write actor data</option>
+            <option value="3">Delete actor data</option>
+            <option value="4">Read film data</option>
+        </select>
+        <br>
+
+        <!-- Input fields for first name and last name -->
+        <label for="first_name">First Name:</label>
+        <input type="text" name="first_name" id="first_name">
+        <br>
+        <label for="last_name">Last Name:</label>
+        <input type="text" name="last_name" id="last_name">
+        <br>
+
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>

@@ -43,8 +43,8 @@ EOF'
 
 # get private dns of instances
 # open config file
-sed -i -e 's/\r$//' instances_private.txt
-filename="instances_private.txt"
+sed -i -e 's/\r$//' cluster_private_ip.txt
+filename="cluster_private_ip.txt"
 
 # Check if the file exists and read it line by line
 cd ~

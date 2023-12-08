@@ -1,3 +1,4 @@
+import os
 import boto3
 from botocore.exceptions import ClientError
 
@@ -146,10 +147,27 @@ def allocate_elastic_ip_to_instances(cluster, config_file1, config_file2):
             with open('config/initialize_db.sql', 'a') as sql_file:
                 sql_file.write(f"GRANT ALL ON *.* TO 'worker{index}'@'{cluster[index].private_dns_name}' IDENTIFIED BY 'worker{index}';\n")
 
-
 def create_gatekeeper(zone_name, key_name, subnet_id, sg):
-    # create the cluster of instances and start them
-    gatekeeper = create_cluster(1, 't2.large', key_name, zone_name, subnet_id, sg)
+    # add the bash script to deploy the flask app in each of the instances
+    if os.path.exists('src/deploy_flask_app.sh'):
+        with open('src/deploy_flask_app.sh', 'r') as file:
+            script = file.read()
+
+    # create the gatekeeper and start it
+    gatekeeper = ec2.create_instances(
+        ImageId = 'ami-0fc5d935ebf8bc3bc',
+        MinCount = 1,
+        MaxCount = 1,
+        InstanceType = 't2.large',
+        KeyName = key_name,
+        Placement = {
+            'AvailabilityZone': zone_name
+        },     
+        SubnetId = subnet_id,
+        SecurityGroupIds = [ sg['GroupId'] ],
+        UserData = script
+    )
+    
     instance_id =  [ gatekeeper[0].id ]
     ec2_client.start_instances(InstanceIds = instance_id)
     
@@ -250,12 +268,12 @@ def main():
     # allocate ip address to the instance
     allocate_elastic_ip_to_instances(cluster1, config_file1, config_file2)
 
-    # create the cluster of instances and start them
+    # create the cluster of instances (for mysql cluster) and start them
     cluster2 = create_cluster(4, 't2.micro', KEY_NAME, ZONE_NAME, zone_subnet_id, cluster_sg)
     instances2 =  [instance.id for instance in cluster2]
     ec2_client.start_instances(InstanceIds = instances2)
     
-    # wait for the instance to be running before proceeding        
+    # wait for the instances to be running before proceeding        
     waiter = ec2_client.get_waiter('instance_running')
     waiter.wait(InstanceIds = instances2)
     
@@ -266,15 +284,15 @@ def main():
     config_file1.close()
     config_file2.close()
 
-    # create gatekeeper
+    # create gatekeeper instance
     gatekeeper = create_gatekeeper(ZONE_NAME, KEY_NAME, zone_subnet_id, gatekeeper_sg)
     gatekeeper[0].reload()
 
-    # create trusted host
+    # create trusted host instance
     trusted_host = create_trusted_host(ZONE_NAME, KEY_NAME, zone_subnet_id, trusted_host_sg)
     trusted_host[0].reload()
 
-    # create proxy
+    # create proxy instance
     proxy = create_proxy(ZONE_NAME, KEY_NAME, zone_subnet_id, proxy_sg)
     proxy[0].reload()
 
