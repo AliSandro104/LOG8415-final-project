@@ -11,9 +11,11 @@
     <div class="container mt-5">
         <h1 style="text-align: center;">Gatekeeper Web Application</h1>
         <form action="/submit_query" method="post">
-            <h5>Please input the database operation you want to perform and the full name of the actor.</h5>
+            <h5>Please input the database operation, the full name of the actor and the proxy algorithm to use</h5>
+            
+            <!-- Input field for the database operation-->
             <div class="form-group">
-                <label for="operation">Sakila Database Operation:</label>
+                <label for="operation">Sakila Database Operation</label>
                 <select class="form-control" name="operation" id="operation">
                     <option value="1">Get the basic info of an actor</option>
                     <option value="2">Add an actor</option>
@@ -22,14 +24,24 @@
                 </select>
             </div>
 
-            <!-- Input fields for first name and last name -->
+            <!-- Input fields for first name and last name of the actor-->
             <div class="form-group">
-                <label for="first_name">Actor First Name:</label>
+                <label for="first_name">Actor First Name</label>
                 <input type="text" class="form-control" name="first_name" id="first_name">
             </div>
             <div class="form-group">
-                <label for="last_name">Actor Last Name:</label>
+                <label for="last_name">Actor Last Name</label>
                 <input type="text" class="form-control" name="last_name" id="last_name">
+            </div>
+
+            <!-- Input field for the proxy algorithm-->
+            <div class="form-group">
+                <label for="operation">Proxy Algorithm</label>
+                <select class="form-control" name="proxy" id="proxy">
+                    <option value="1">Direct hit</option>
+                    <option value="2">Random</option>
+                    <option value="3">Customized</option>
+                </select>
             </div>
 
             <button type="submit" class="btn btn-primary">Submit</button>

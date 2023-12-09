@@ -148,25 +148,8 @@ def allocate_elastic_ip_to_instances(cluster, config_file1, config_file2):
                 sql_file.write(f"GRANT ALL ON *.* TO 'worker{index}'@'{cluster[index].private_dns_name}' IDENTIFIED BY 'worker{index}';\n")
 
 def create_gatekeeper(zone_name, key_name, subnet_id, sg):
-    # add the bash script to deploy the flask app in each of the instances
-    if os.path.exists('src/deploy_flask_app.sh'):
-        with open('src/deploy_flask_app.sh', 'r') as file:
-            script = file.read()
-
     # create the gatekeeper and start it
-    gatekeeper = ec2.create_instances(
-        ImageId = 'ami-0fc5d935ebf8bc3bc',
-        MinCount = 1,
-        MaxCount = 1,
-        InstanceType = 't2.large',
-        KeyName = key_name,
-        Placement = {
-            'AvailabilityZone': zone_name
-        },     
-        SubnetId = subnet_id,
-        SecurityGroupIds = [ sg['GroupId'] ],
-        UserData = script
-    )
+    gatekeeper = create_cluster(1, 't2.large', key_name, zone_name, subnet_id, sg)
     
     instance_id =  [ gatekeeper[0].id ]
     ec2_client.start_instances(InstanceIds = instance_id)
@@ -178,7 +161,7 @@ def create_gatekeeper(zone_name, key_name, subnet_id, sg):
     return gatekeeper
 
 def create_trusted_host(zone_name, key_name, subnet_id, sg):
-    # create the cluster of instances and start them
+    # create the trusted host and start it
     trusted_host = create_cluster(1, 't2.large', key_name, zone_name, subnet_id, sg)
     instance_id =  [ trusted_host[0].id ]
     ec2_client.start_instances(InstanceIds = instance_id)
@@ -190,7 +173,7 @@ def create_trusted_host(zone_name, key_name, subnet_id, sg):
     return trusted_host
 
 def create_proxy(zone_name, key_name, subnet_id, sg):
-    # create the cluster of instances and start them
+    # create the proxy and start it
     proxy = create_cluster(1, 't2.large', key_name, zone_name, subnet_id, sg)
     instance_id =  [ proxy[0].id ]
     ec2_client.start_instances(InstanceIds = instance_id)
@@ -236,23 +219,33 @@ def main():
     add_inbound_ip_permissions(cluster_sg, 'tcp', 3306, 3306, ip_ranges, cluster_sg)
     add_inbound_ip_permissions(cluster_sg, 'tcp', 8082, 8082, ip_ranges, proxy_sg)
     add_inbound_ip_permissions(cluster_sg, 'icmp', -1, -1, ip_ranges, proxy_sg) # allow the cluster to be ping-ed by the proxy
+    add_outbound_ip_permissions(cluster_sg, 'tcp', 1186, 1186, ip_ranges, cluster_sg)
+    add_outbound_ip_permissions(cluster_sg, 'tcp', 3306, 3306, ip_ranges, cluster_sg)
+    add_outbound_ip_permissions(cluster_sg, 'tcp', 8082, 8082, ip_ranges, proxy_sg)
+    add_outbound_ip_permissions(cluster_sg, 'icmp', -1, -1, ip_ranges, proxy_sg) # allow the cluster to respond to the ping
 
     # add ip permissions for proxy security group
     add_inbound_ip_permissions(proxy_sg, 'tcp', 22, 22, ip_ranges, None)
     add_inbound_ip_permissions(proxy_sg, 'tcp', 8082, 8082, ip_ranges, cluster_sg)
     add_inbound_ip_permissions(proxy_sg, 'tcp', 8081, 8081, ip_ranges, trusted_host_sg)
-    add_inbound_ip_permissions(proxy_sg, 'icmp', -1, -1, ip_ranges, cluster_sg) # allow the cluster to be ping-ed by the proxy
+    add_inbound_ip_permissions(proxy_sg, 'icmp', -1, -1, ip_ranges, cluster_sg) # allow the proxy to receive a response after pinging the cluster
+    add_outbound_ip_permissions(proxy_sg, 'tcp', 8082, 8082, ip_ranges, cluster_sg)
+    add_outbound_ip_permissions(proxy_sg, 'tcp', 8081, 8081, ip_ranges, trusted_host_sg)
+    add_outbound_ip_permissions(proxy_sg, 'icmp', -1, -1, ip_ranges, cluster_sg) # allow the proxy to ping the cluster
 
     # add ip permissions for trusted host security group
     add_inbound_ip_permissions(trusted_host_sg, 'tcp', 22, 22, ip_ranges, None)
     add_inbound_ip_permissions(trusted_host_sg, 'tcp', 8081, 8081, ip_ranges, proxy_sg)
     add_inbound_ip_permissions(trusted_host_sg, 'tcp', 8080, 8080, ip_ranges, gatekeeper_sg)
+    add_outbound_ip_permissions(trusted_host_sg, 'tcp', 8081, 8081, ip_ranges, proxy_sg)
+    add_outbound_ip_permissions(trusted_host_sg, 'tcp', 8080, 8080, ip_ranges, gatekeeper_sg)
     
     # add ip permissions for gatekeeper security group
     add_inbound_ip_permissions(gatekeeper_sg, 'tcp', 22, 22, ip_ranges, None)
     add_inbound_ip_permissions(gatekeeper_sg, 'tcp', 80, 80, ip_ranges, None)
     add_inbound_ip_permissions(gatekeeper_sg, 'tcp', 443, 443, ip_ranges, None)
     add_inbound_ip_permissions(gatekeeper_sg, 'tcp', 8080, 8080, ip_ranges, trusted_host_sg)
+    add_outbound_ip_permissions(gatekeeper_sg, 'tcp', 8080, 8080, ip_ranges, trusted_host_sg)
     
     # create the single instance and start it
     cluster1 = create_cluster(1, 't2.micro', KEY_NAME, ZONE_NAME, zone_subnet_id, cluster_sg)

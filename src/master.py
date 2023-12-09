@@ -60,6 +60,7 @@ def main():
 
         # Process the SQL query
         result = process_sql_query(data)
+        result = f"{result}|Master"
 
         # Send the result back to the proxy
         conn.sendall(str(result).encode('utf-8'))

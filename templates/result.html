@@ -3,15 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gatekeeper Application - Result</title>
+    <title>Gatekeeper Web Application - Result</title>
     <!-- Add Bootstrap CSS to make the application look better -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container mt-5">
-        <h1 class="mb-4">Result:</h1>
+        <h1 style="text-align: center;" class="mb-4">Result</h1>
         <div class="alert alert-info" role="alert">
-            {{ result }}
+            <!-- Display the results -->
+            <p>Query Result: {{ result }}</p>
+            <p>Node selected by the proxy: {{ node_selected }}</p>
+
+            <!-- Display response time -->
+            <p>Response Time: {{ response_time * 1000}} ms</p>
         </div>
         <a class="btn btn-primary" href="/" role="button">Go Back</a>
     </div>

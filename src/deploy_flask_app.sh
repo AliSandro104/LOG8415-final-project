@@ -31,11 +31,12 @@ source myenv/bin/activate
 cat > /home/ubuntu/flaskapp/flaskapp.py << 'EOF'
 from flask import Flask, render_template, request
 import socket
+import time
 
 app = Flask(__name__)
 
-def send_data_to_trusted_host(operation, actor_first_name, actor_last_name):
-    # Open the config file to get the private ip of the gatekeeper
+def send_data_to_trusted_host(operation, actor_first_name, actor_last_name, proxy_algorithm):
+    # Open the config file to get the private ip of the trusted host
     filename = '/home/ubuntu/flaskapp/cloud_pattern_private_ip.txt'
     with open(filename, 'r') as file:
         ip_addresses = file.readlines()
@@ -47,11 +48,11 @@ def send_data_to_trusted_host(operation, actor_first_name, actor_last_name):
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((trusted_host_host, trusted_host_port))
 
-    # Send the operation and user input to the trusted host
-    data_to_send = f"{operation}|{actor_first_name}|{actor_last_name}"
+    # Send the db operation, user input and proxy algorithm to the trusted host
+    data_to_send = f"{operation}|{actor_first_name}|{actor_last_name}|{proxy_algorithm}"
     client_socket.sendall(data_to_send.encode('utf-8'))
 
-    # Receive and return the result from the trusted host
+    # Receive and forward the result from the trusted host
     result = client_socket.recv(1024).decode('utf-8')
 
     client_socket.close()
@@ -63,14 +64,25 @@ def index():
 
 @app.route('/submit_query', methods=['POST'])
 def submit_query():
+
+    # Record the start time
+    start_time = time.time()
+
+    # Get the inputs from the user interface
     operation = request.form['operation']
     actor_first_name = request.form.get('first_name', '')
     actor_last_name = request.form.get('last_name', '')
+    proxy_algorithm = request.form['proxy']
 
-    # Send the operation and user input to the trusted host
-    result = send_data_to_trusted_host(operation, actor_first_name, actor_last_name)
+    # Send the db operation, user input and proxy algorithm to the trusted host
+    result = send_data_to_trusted_host(operation, actor_first_name, actor_last_name, proxy_algorithm)
 
-    return render_template('result.html', result=result)
+    query_result, node_selected = result.split('|')
+
+    # Calculate the response time
+    response_time = time.time() - start_time
+
+    return render_template('result.html', result=query_result, node_selected=node_selected, response_time=response_time)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)

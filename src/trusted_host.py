@@ -20,7 +20,7 @@ def construct_sql_query(operation, first_name, last_name):
         return "Error: Invalid operation"
 
 def main():
-    # Open the config file to get the private ip of the trusted host
+    # Open the config file to get the private ip of the trusted host and proxy
     filename = 'cloud_pattern_private_ip.txt'
     with open(filename, 'r') as file:
         ip_addresses = file.readlines()
@@ -48,18 +48,21 @@ def main():
         components = data.split('|')
 
         # Validate the request
-        if len(components) == 3:
-            operation, first_name, last_name = components
+        if len(components) == 4:
+            operation, first_name, last_name, proxy_algorithm = components
 
             # Check if the inputs are valid
             if validate_request(first_name, last_name):
                 # Construct the SQL query based on the operation and user input
                 sql_query = construct_sql_query(operation, first_name, last_name)
 
+                # add the proxy algorithm to the data to be sent
+                data = f"{sql_query}|{proxy_algorithm}"
+
                 # Forward the request to the proxy
                 proxy_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 proxy_socket.connect((proxy_address, proxy_port))
-                proxy_socket.sendall(sql_query.encode('utf-8'))
+                proxy_socket.sendall(data.encode('utf-8'))
 
                 # Receive and forward the result from the proxy
                 result = proxy_socket.recv(1024).decode('utf-8')

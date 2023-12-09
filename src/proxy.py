@@ -5,9 +5,8 @@ from subprocess import Popen, PIPE
 
 # create a list that contains the three algorithms that need to be implemented
 worker_choice_algorithms = ['Direct hit', 'Random', 'Customized']
-algorithm = worker_choice_algorithms[2] # Customized
 
-# measure the response time when pinging a server with an ip address
+# measure the response time when pinging a server
 # code inspired by https://medium.com/@networksuatomation/python-ping-an-ip-adress-663ed902e051
 def measure_response_time(ip_address):
     data = ""
@@ -37,7 +36,12 @@ def choose_node(data):
         ip_addresses = file.readlines()
 
     ip_addresses = [ip.strip() for ip in ip_addresses]
-    sql_query_type = data.split()[0].lower() # get the first word of the sql query to know if it's a read or write transaction
+
+    sql_query, proxy_algorithm = data.split('|')
+
+    sql_query_type = sql_query.split()[0].lower() # get the first word of the sql query to know if it's a read or write transaction
+
+    algorithm = worker_choice_algorithms[int(proxy_algorithm) - 1] # Decode the algorithm choice for the worker selection
 
     if algorithm == 'Direct hit' or sql_query_type != "select" : # if the algorithm is 'Direct hit' or if the sql query requires a write transaction
         return ip_addresses[1] # return the ip of the master node
@@ -76,9 +80,10 @@ def main():
         node_port = 8082
 
         # send the request to the chosen node
+        sql_query, _ = data.split('|')
         node_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         node_socket.connect((node_ip_address, node_port))
-        node_socket.sendall(data.encode('utf-8'))
+        node_socket.sendall(sql_query.encode('utf-8'))
 
         # Receive and forward the result from the node
         result = node_socket.recv(1024).decode('utf-8')

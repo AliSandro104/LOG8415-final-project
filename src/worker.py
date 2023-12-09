@@ -79,6 +79,7 @@ def main():
 
         # Process the SQL query
         result = process_sql_query(data, worker_num)
+        result = f"{result}|Worker{worker_num}"
 
         # Send the result back to the proxy
         conn.sendall(str(result).encode('utf-8'))
