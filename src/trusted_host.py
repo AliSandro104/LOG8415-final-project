@@ -7,6 +7,7 @@ def validate_request(first_name, last_name):
     return False
 
 def construct_sql_query(operation, first_name, last_name):
+    # Construct the sql query based on the operation chosen by the user
     if operation == "1":
         return f"SELECT * FROM actor WHERE actor.first_name = '{first_name}' AND actor.last_name = '{last_name}';"
     elif operation == "2":
@@ -25,17 +26,17 @@ def main():
         ip_addresses = file.readlines()
 
     trusted_host_address = ip_addresses[1].strip()
-    trusted_host_port = 8081
+    trusted_host_port = 8080
 
     proxy_address = ip_addresses[2].strip()
-    proxy_port = 8082
+    proxy_port = 8081
 
     trusted_host_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     trusted_host_socket.bind((trusted_host_address, trusted_host_port))
     trusted_host_socket.listen(1)
     print(f"Trusted Host listening on {trusted_host_address}:{trusted_host_port}")
 
-    # listen on port 8081 for requests
+    # listen on port 8080 for requests from the gatekeeper
     while True:
         conn, addr = trusted_host_socket.accept()
         print(f"Connection from {addr}")

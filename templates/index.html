@@ -1,29 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gatekeeper Application</title>
+    <!-- Add Bootstrap CSS to make the application look better -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Choose an operation:</h1>
-    <form action="/submit_query" method="post">
-        <label for="operation">Operation:</label>
-        <select name="operation" id="operation">
-            <option value="1">Read actor data</option>
-            <option value="2">Write actor data</option>
-            <option value="3">Delete actor data</option>
-            <option value="4">Read film data</option>
-        </select>
-        <br>
+    <div class="container mt-5">
+        <h1 style="text-align: center;">Gatekeeper Web Application</h1>
+        <form action="/submit_query" method="post">
+            <h5>Please input the database operation you want to perform and the full name of the actor.</h5>
+            <div class="form-group">
+                <label for="operation">Sakila Database Operation:</label>
+                <select class="form-control" name="operation" id="operation">
+                    <option value="1">Get the basic info of an actor</option>
+                    <option value="2">Add an actor</option>
+                    <option value="3">Delete an actor</option>
+                    <option value="4">Get all the films of an actor </option>
+                </select>
+            </div>
 
-        <!-- Input fields for first name and last name -->
-        <label for="first_name">First Name:</label>
-        <input type="text" name="first_name" id="first_name">
-        <br>
-        <label for="last_name">Last Name:</label>
-        <input type="text" name="last_name" id="last_name">
-        <br>
+            <!-- Input fields for first name and last name -->
+            <div class="form-group">
+                <label for="first_name">Actor First Name:</label>
+                <input type="text" class="form-control" name="first_name" id="first_name">
+            </div>
+            <div class="form-group">
+                <label for="last_name">Actor Last Name:</label>
+                <input type="text" class="form-control" name="last_name" id="last_name">
+            </div>
 
-        <input type="submit" value="Submit">
-    </form>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+    <!-- Add Bootstrap JS for the effects-->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </body>
 </html>

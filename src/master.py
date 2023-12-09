@@ -43,13 +43,14 @@ def main():
     ip_addresses = [ip.strip() for ip in ip_addresses]
 
     master_host = ip_addresses[1]
-    master_port = 8083
+    master_port = 8082
 
     master_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     master_socket.bind((master_host, master_port))
     master_socket.listen(1)
     print(f"Master listening on {master_host}:{master_port}")
 
+    # listen on port 8082 for requests from the proxy
     while True:
         conn, addr = master_socket.accept()
         print(f"Connection from {addr}")

@@ -20,8 +20,8 @@ sudo mv ../index.html templates
 sudo mv ../result.html templates
 sudo mv ../cloud_pattern_private_ip.txt .
 
-sudo apt install authbind
 # Configure access to port 80
+sudo apt install authbind
 sudo touch /etc/authbind/byport/80
 sudo chmod 777 /etc/authbind/byport/80
 
@@ -34,7 +34,7 @@ import socket
 
 app = Flask(__name__)
 
-def send_data_to_trusted_host(operation, first_name, last_name):
+def send_data_to_trusted_host(operation, actor_first_name, actor_last_name):
     # Open the config file to get the private ip of the gatekeeper
     filename = '/home/ubuntu/flaskapp/cloud_pattern_private_ip.txt'
     with open(filename, 'r') as file:
@@ -42,13 +42,13 @@ def send_data_to_trusted_host(operation, first_name, last_name):
 
     # Connect to the trusted host
     trusted_host_host = ip_addresses[1].strip()
-    trusted_host_port = 8081
+    trusted_host_port = 8080
 
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((trusted_host_host, trusted_host_port))
 
     # Send the operation and user input to the trusted host
-    data_to_send = f"{operation}|{first_name}|{last_name}"
+    data_to_send = f"{operation}|{actor_first_name}|{actor_last_name}"
     client_socket.sendall(data_to_send.encode('utf-8'))
 
     # Receive and return the result from the trusted host
@@ -64,11 +64,11 @@ def index():
 @app.route('/submit_query', methods=['POST'])
 def submit_query():
     operation = request.form['operation']
-    first_name = request.form.get('first_name', '')
-    last_name = request.form.get('last_name', '')
+    actor_first_name = request.form.get('first_name', '')
+    actor_last_name = request.form.get('last_name', '')
 
     # Send the operation and user input to the trusted host
-    result = send_data_to_trusted_host(operation, first_name, last_name)
+    result = send_data_to_trusted_host(operation, actor_first_name, actor_last_name)
 
     return render_template('result.html', result=result)
 

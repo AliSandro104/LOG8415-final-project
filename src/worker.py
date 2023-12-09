@@ -62,13 +62,14 @@ def main():
     # identify worker number and worker hostname
     worker_num, worker_host = get_worker_info()
 
-    worker_port = 8083
+    worker_port = 8082
 
     master_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     master_socket.bind((worker_host, worker_port))
     master_socket.listen(1)
     print(f"Worker {worker_num} listening on {worker_host}:{worker_port}")
 
+    # listen on port 8082 for requests from the proxy
     while True:
         conn, addr = master_socket.accept()
         print(f"Connection from {addr}")

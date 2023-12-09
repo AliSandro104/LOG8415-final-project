@@ -22,7 +22,7 @@ sudo chmod 777 /etc/profile.d/mysqlc.sh
 sudo apt-get update
 sudo apt-get -y install libncurses5
 
-# configurate the manager instance
+# configure the manager instance
 sudo mkdir -p /opt/mysqlcluster/deploy
 sudo mkdir -p /usr/local/mysql/mysql-cluster
 cd /opt/mysqlcluster/deploy
@@ -41,8 +41,7 @@ basedir=/opt/mysqlcluster/home/mysqlc
 port=3306
 EOF'
 
-# get private dns of instances
-# open config file
+# open config file and get private dns of instances
 sed -i -e 's/\r$//' cluster_private_ip.txt
 filename="cluster_private_ip.txt"
 

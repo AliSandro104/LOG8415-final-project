@@ -40,7 +40,7 @@ def choose_node(data):
     sql_query_type = data.split()[0].lower() # get the first word of the sql query to know if it's a read or write transaction
 
     if algorithm == 'Direct hit' or sql_query_type != "select" : # if the algorithm is 'Direct hit' or if the sql query requires a write transaction
-        return ip_addresses[1] # return the master node
+        return ip_addresses[1] # return the ip of the master node
     
     elif algorithm == 'Random': # if the algorithm is 'Random'
         random_list = ip_addresses[-3:] # take the last three elements of the list (representing the ip addresses of the worker nodes)
@@ -57,14 +57,14 @@ def main():
 
     ip_addresses = [ip.strip() for ip in ip_addresses]
     proxy_host = ip_addresses[2]
-    proxy_port = 8082
+    proxy_port = 8081
 
     proxy_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     proxy_socket.bind((proxy_host, proxy_port))
     proxy_socket.listen(1)
     print(f"Proxy listening on {proxy_host}:{proxy_port}")
 
-    # listen on port 8082 for requests
+    # listen on port 8081 for requests from the trusted host
     while True:
         conn, addr = proxy_socket.accept()
         print(f"Connection from {addr}")
@@ -73,7 +73,7 @@ def main():
         print(f"Received data: {data}")
 
         node_ip_address = choose_node(data)
-        node_port = 8083
+        node_port = 8082
 
         # send the request to the chosen node
         node_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

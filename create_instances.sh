@@ -56,11 +56,11 @@ sleep 1m
 sed -i -e 's/\r$//' config/install_mysql.sh
 sed -i -e 's/\r$//' config/setup_manager.sh
 sed -i -e 's/\r$//' config/setup_worker.sh
-sed -i -e 's/\r$//' deploy_flask_app.sh
+sed -i -e 's/\r$//' src/deploy_flask_app.sh
 chmod 777 config/install_mysql.sh
 chmod 777 config/setup_manager.sh
 chmod 777 config/setup_worker.sh
-chmod 777 deploy_flask_app.sh
+chmod 777 src/deploy_flask_app.sh
 chmod 777 src/trusted_host.py
 chmod 777 src/proxy.py
 chmod 777 templates/index.html
