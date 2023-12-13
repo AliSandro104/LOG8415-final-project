@@ -61,6 +61,7 @@ chmod 777 config/install_mysql.sh
 chmod 777 config/setup_manager.sh
 chmod 777 config/setup_worker.sh
 chmod 777 src/deploy_flask_app.sh
+chmod 777 src/benchmarking.py
 chmod 777 src/trusted_host.py
 chmod 777 src/proxy.py
 chmod 777 templates/index.html
@@ -107,6 +108,7 @@ scp -o StrictHostKeyChecking=no -i $KEY_NAME ip_addresses/cloud_pattern_private_
 # copy file to the gatekeeper instance
 scp -o StrictHostKeyChecking=no -i $KEY_NAME $KEY_NAME ubuntu@$GATEKEEPER:/home/ubuntu
 scp -o StrictHostKeyChecking=no -i $KEY_NAME src/deploy_flask_app.sh ubuntu@$GATEKEEPER:/home/ubuntu
+scp -o StrictHostKeyChecking=no -i $KEY_NAME src/benchmarking.py ubuntu@$GATEKEEPER:/home/ubuntu
 scp -o StrictHostKeyChecking=no -i $KEY_NAME templates/index.html ubuntu@$GATEKEEPER:/home/ubuntu
 scp -o StrictHostKeyChecking=no -i $KEY_NAME templates/result.html ubuntu@$GATEKEEPER:/home/ubuntu
 scp -o StrictHostKeyChecking=no -i $KEY_NAME ip_addresses/cloud_pattern_private_ip.txt ubuntu@$GATEKEEPER:/home/ubuntu
